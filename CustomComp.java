@@ -17,6 +17,7 @@ public class CustomComp {
 
 	public static long pb = 0;
 	public static String pbTime = "";
+	public static boolean readPb = true;
 	public static long sob = 0;
 	public static ArrayList<Long> golds = new ArrayList<Long>();
 	public static String[] pbExit = new String[0];
@@ -75,37 +76,35 @@ public class CustomComp {
 		compName = "Custom Comp";
 	}
 
+	public static void getWriteName(String arg) {
+		if (arg.equals("_generate_")) {generateWriteName();
+		} else if (arg.equals("_overwrite_")) {writeName = readName;
+		} else {writeName = arg;}
+	}
+
+	public static void getCompName(String arg) {
+		if (arg.equals("_generate_")) {generateCompName();
+		} else {compName = arg;}
+	}
+
+	public static void getCustomPb(String arg) {
+		readPb = false;
+		pbTime = arg;
+		pb = getMillis(pbTime);
+	}
+
 	public static void processArgs(String[] args) {
 		readName = args[0];
-		if (args.length > 1) {
-			if (args[1].equals("_debug_")) {
-				debug = true;
-				generateWriteName();
-				generateCompName();
-			} else {
-				if (args[1].equals("_generate_")) {
-					generateWriteName();
-				} else if (args[1].equals("_overwrite_")) {
-					writeName = readName;
-				} else {
-					writeName = args[1];
-				} if (args.length > 2) {
-					if (args[2].equals("_debug_")) {
-						debug = true;
-						generateCompName();
-					} else {
-						if (args[2].equals("_generate_")) {
-							generateCompName();
-						} else {
-							compName = args[2];
-						} if (args.length > 3 && args[3].equals("_debug_")) {
-							debug = true;
-				}}} else {
-					generateCompName();
-		}}} else {
-			generateWriteName();
-			generateCompName();
-		} printCategory("read file");
+		int length = args.length;
+		if (args[length - 1].equals("_debug_")) {
+			debug = true;
+			length--;
+		} if (length > 1) {getCustomPb(args[1]);}
+		if (length > 2) {getCompName(args[2]);
+		} else {generateCompName();}
+		if (length > 3) {getWriteName(args[3]);
+		} else {generateWriteName();}
+		printCategory("read file");
 		printData(readName);
 		printCategory("write file");
 		printData(writeName);
@@ -142,10 +141,11 @@ public class CustomComp {
 				index = pbIndex;
 			} printSubCat("split " + (i + 1));
 			printData(wasSkipped[i] + "");
-		} copyToNextInstanceOf(timeIndicator);
-		pbTime = copyCharacters(timeValueLength);
-		pb = getMillis(pbTime);
-		printCategory("personal best");
+		} if (readPb) {
+			copyToNextInstanceOf(timeIndicator);
+			pbTime = copyCharacters(timeValueLength);
+			pb = getMillis(pbTime);
+		} printCategory("personal best");
 		printData(pbTime + " (" + pb + ")");
 		index = 0;
 	}
